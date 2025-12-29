@@ -9,7 +9,7 @@ def entrypoint {
 }
 
 def onclick(event dynamic) {
-	event.stopPropagation()
+	event.preventDefault()
 
 	const element = event.target
 	const encoded = element.getAttribute(NAME)
