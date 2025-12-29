@@ -11,7 +11,7 @@ BROTLI ?= brotli -Z
 all: build minify dist
 
 build:
-	$(SKEWC) $(SKEW_OPTIONS) --output-file=page/script.js --define:IS_WEBPAGE=true $(FILES)
+	$(SKEWC) $(SKEW_OPTIONS) --output-file=docs/script.js --define:IS_WEBPAGE=true $(FILES)
 	$(SKEWC) $(SKEW_OPTIONS) --output-file=script.js $(FILES)
 
 minify:
@@ -19,8 +19,8 @@ minify:
 	$(TERSER) script.js -o script.js --compress --mangle
 
 dist:
-	rm -rf page/dist
-	mkdir -p page/dist
-	cp script.js page/dist/script.min.js
-	$(GZIP) page/dist/script.min.js
-	$(BROTLI) page/dist/script.min.js
+	rm -rf docs/dist
+	mkdir -p docs/dist
+	cp script.js docs/dist/script.min.js
+	$(GZIP) docs/dist/script.min.js
+	$(BROTLI) docs/dist/script.min.js
