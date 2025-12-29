@@ -1,0 +1,19 @@
+
+def encodeBase64(data Uint8Array) string {
+	var table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".split("")
+	var n = data.length
+	var chars = List<string>.new
+	var i = 0 as double
+	while i < n {
+		var b0 = data[i++ as int]
+		var hasB1 = i < n
+		var b1 = hasB1 ? data[i++ as int] : 0
+		var hasB2 = i < n
+		var b2 = hasB2 ? data[i++ as int] : 0
+		chars.append(table[(b0 >> 2) & 63])
+		chars.append(table[((b0 & 3) << 4) | (b1 >> 4)])
+		chars.append(hasB1 ? table[((b1 & 15) << 2) | (b2 >> 6)] : "=")
+		chars.append(hasB2 ? table[b2 & 63] : "=")
+	}
+	return "".join(chars)
+}

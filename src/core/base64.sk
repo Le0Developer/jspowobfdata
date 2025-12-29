@@ -1,0 +1,25 @@
+
+# based on https://github.com/evanw/esbuild/blob/cd832972927f1f67b6d2cc895c06a8759c1cf309/internal/runtime/runtime.go#L488-L502
+def decodeBase64(input string) Uint8Array {
+	var table = Uint8Array.new(128)
+	for i in 0 .. 64 {
+		# casts to double to prevent integer casts
+		table[i < 26 ? (i as double) + 65 : (i as double) < 52 ? (i as double) + 71 : i < 62 ? (i as double) - 4 : (i as double) * 4 - 205] = i
+	}
+
+	var co = input.codeUnits as dynamic
+	var n = input.count
+	var bytes = Uint8Array.new(((n - (co[n - 1] == '=') as dynamic - (co[n - 2] == '=') as dynamic as double) * 3) / 4)
+	var i = 0 as double
+	var j = 0 as double
+	while i < n {
+		var c0 = table[co[i++]]
+		var c1 = table[co[i++]]
+		var c2 = table[co[i++]]
+		var c3 = table[co[i++]]
+		bytes[j++] = (c0 << 2) | (c1 >> 4)
+		bytes[j++] = ((c1 & 15) << 4) | (c2 >> 2)
+		bytes[j++] = ((c2 & 3) << 6) | c3
+	}
+	return bytes
+}

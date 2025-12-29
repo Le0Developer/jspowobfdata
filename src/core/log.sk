@@ -1,0 +1,4 @@
+@skip if RELEASE
+def log(msg string) {
+	dynamic.console.log(msg)
+}

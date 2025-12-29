@@ -1,0 +1,64 @@
+def performSpeedTest(cb fn(double)) {
+	var key = Uint8Array.new(32)
+	var nonce = Uint8Array.new(12)
+	var plaintext = Uint8Array.new(16)
+
+	crypto.getRandomValues(key)
+	crypto.getRandomValues(nonce)
+	crypto.getRandomValues(plaintext)
+
+	var simulator = Simulator.new(key, nonce, plaintext)
+	simulator.simulate(cb)
+}
+
+const desiredDuration = 10000.0
+
+class Simulator {
+	var ctr = 0
+	var goal = 100000
+	var start = performance.now()
+
+	var key Uint8Array
+	var nonce Uint8Array
+	var plaintext Uint8Array
+
+	def simulate(cb fn(double)) {
+		if ctr > goal {
+			var end = performance.now()
+			if end - start < desiredDuration {
+				goal *= (end - start) / desiredDuration * 1.1
+			} else {
+				var opsPerSecond = (ctr as double) / ((end - start) / 1000.0)
+				cb(opsPerSecond)
+				return
+			}
+		}
+
+		ctr++
+		crypto.subtle.importKey(
+			"raw",
+			key,
+			{ "name": "AES-GCM" },
+			false,
+			["encrypt"]
+		).then((key) => {
+			return crypto.subtle.encrypt(
+				{
+					"name": "AES-GCM",
+					"iv": nonce
+				},
+				key,
+				plaintext
+			)
+		}).then(() => {
+			if (ctr & 0xfff) == 0 {
+				dynamic.setTimeout(() => simulate(cb), 0)
+			} else {
+				simulate(cb)
+			}
+		})
+	}
+}
+
+@import
+var performance dynamic

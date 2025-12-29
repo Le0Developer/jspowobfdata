@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.1.1/css/pico.classless.jade.min.css"
+      integrity="sha256-uy1ltDBeVXSaE/PVXPo/KKSLhYTmm6eVoPB12lBXn64="
+      crossorigin="anonymous"
+    />
+    <script
+      src="script.js"
+      defer
+    ></script>
+    <title>Obfuscate</title>
+  </head>
+  <body class="container">
+    <header>
+      <h1>JavaScript Proof Of Work Obfuscated Data</h1>
+    </header>
+    <main>
+      <section>
+        <h2>Obfuscate Data</h2>
+
+        <form id="obfuscate">
+          <label for="data-input">Data to Obfuscate (HTML)</label>
+          <textarea
+            id="data-input"
+            name="data-input"
+            rows="4"
+            placeholder="Enter data here..."
+          ></textarea>
+
+          <label for="keyspace-input">Keyspace (bits to bruteforce)</label>
+          <input
+            type="range"
+            id="keyspace-input"
+            name="keyspace-input"
+            min="1"
+            max="32"
+            value="20"
+          />
+          <div class="grid">
+            <small id="keyspace-estimate"> </small>
+            <button
+              type="button"
+              id="estimate-speed-button"
+              style="
+                --pico-form-element-spacing-vertical: 0rem;
+                --pico-form-element-spacing-horizontal: 0.25rem;
+                font-size: 0.75rem;
+              "
+            >
+              Estimate Speed
+            </button>
+          </div>
+
+          <button type="submit">Obfuscate</button>
+        </form>
+      </section>
+
+      <section
+        hidden
+        id="output"
+      >
+        <h2>Obfuscated Data</h2>
+        <label for="obfuscated-output">Obfuscated Data</label>
+        <textarea
+          id="obfuscated-output"
+          name="obfuscated-output"
+          class="obfuscated-data"
+          rows="4"
+          readonly
+        ></textarea>
+
+        <article>
+          <header>Embedding guide</header>
+          <p>
+            To embed the obfuscated data into your webpage, create an HTML
+            element (like a &lt;div&gt; or &lt;span&gt;) and add the attribute
+            <code>jspowobfdata</code> with the obfuscated data as its value. For
+            example:
+          </p>
+          <pre>
+            <code>&lt;button jspowobfdata="<span class="obfuscated-data"></span>"&gt;<br>  Click to decrypt<br>&lt;/button&gt;</code>
+          </pre>
+          <p>
+            You also need to include the JavaScript file that handles the
+            deobfuscation process.
+            <b
+              >We recommend hosting the script yourself for better
+              reliability.</b
+            >
+            Include it in your HTML with a &lt;script&gt; tag:
+          </p>
+          <pre>
+            <code>&lt;script src="/js/secure-content.js"&gt;&lt;/script&gt;</code>
+          </pre>
+          <p>
+            You can find the source code for the script here:
+            <a href="dist/script.min.js">dist/script.min.js</a>
+          </p>
+        </article>
+      </section>
+
+      <hr />
+
+      <section>
+        <h2>Deobfuscate Data</h2>
+
+        <p>
+          If you want to test deobfuscation manually, you can paste obfuscated
+          data here:
+        </p>
+
+        <form id="deobfuscate">
+          <label for="deobfuscate-input">Obfuscated Data</label>
+          <textarea
+            id="deobfuscate-input"
+            name="deobfuscate-input"
+            rows="4"
+            placeholder="Enter obfuscated data here..."
+          ></textarea>
+
+          <button type="submit">Deobfuscate</button>
+        </form>
+      </section>
+
+      <section
+        hidden
+        id="deobfuscated-output"
+      >
+        <h2>Deobfuscated Data</h2>
+        <label for="deobfuscated-data">Deobfuscated Data</label>
+        <textarea
+          id="deobfuscated-data"
+          name="deobfuscated-data"
+          rows="4"
+          readonly
+        ></textarea>
+        <small id="deobfuscated-speed"></small>
+      </section>
+
+      <hr />
+
+      <section>
+        <h2>What is this?</h2>
+        <p>
+          This is a proof of concept implementation of obfuscated data using
+          JavaScript and the Web Crypto API. The data is encrypted using AES-GCM
+          with a random key and nonce. The key is then obfuscated by requiring
+          the client to brute-force a portion of the keyspace before being able
+          to decrypt the data. This is achieved by zero-ing out bits in the key
+          and requiring the client to try different combinations until the
+          correct key is found.
+        </p>
+        <p>
+          More information and the source code can be found in the Github
+          repository linked in the footer.
+        </p>
+      </section>
+
+      <section>
+        <h2>Demo</h2>
+        <p>You can find a link to a demo page in our footer.</p>
+      </section>
+    </main>
+    <footer>
+      <nav>
+        <ul>
+          <li><a href="demo.html">Demo</a></li>
+          <li>
+            <a href="https://github.com/le0developer/jspowobfdata"
+              >GitHub Repository</a
+            >
+          </li>
+        </ul>
+        <ul>
+          <li><a href="https://leodev.xyz">&copy; 2025 LeoDeveloper</a></li>
+        </ul>
+      </nav>
+    </footer>
+  </body>
+</html>

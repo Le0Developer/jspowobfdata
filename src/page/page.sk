@@ -1,0 +1,157 @@
+var estimatedSpeed = 0
+
+
+@entry if IS_WEBPAGE
+def webpage {
+	const form = document.querySelector("#obfuscate")
+	form.addEventListener("submit", (ev) => onsubmit(ev))
+
+	const keyspaceInput = document.querySelector("#keyspace-input")
+	keyspaceInput.addEventListener("input", () => onupdate)
+	onupdate
+
+	const form2 = document.querySelector("#deobfuscate")
+	form2.addEventListener("submit", (ev) => ondeobfuscate(ev))
+
+	const estimateSpeedButton = document.querySelector("#estimate-speed-button")
+	estimateSpeedButton.addEventListener("click", () => {
+		disable(estimateSpeedButton)
+		performSpeedTest((speed) => {
+			estimatedSpeed = speed as int
+			onupdate
+			estimateSpeedButton.remove()
+		})
+	})
+}
+
+def onupdate {
+	const keyspaceInput = document.querySelector("#keyspace-input")
+	const keyspaceEstimate = document.querySelector("#keyspace-estimate")
+
+	const value = dynamic.parseInt(keyspaceInput.value) as int
+	keyspaceEstimate.textContent = "\(value) bits."
+
+	if estimatedSpeed > 0 {
+		const totalOps = 2.0 ** value
+		const seconds = totalOps / estimatedSpeed
+
+		keyspaceEstimate.textContent = "\(value) bits. Estimated bruteforce time: \((seconds as dynamic).toFixed(3)) seconds. Can vary a lot based on luck."
+	}
+}
+
+def onsubmit(event dynamic) {
+	event.preventDefault()
+	const input = document.querySelector("#data-input")
+	const keyspaceInput = document.querySelector("#keyspace-input")
+
+	const data = input.value as string
+	const keyspace = dynamic.parseInt(keyspaceInput.value) as int
+
+	construct(data, keyspace).then((encoded) => {
+		const output = document.querySelector("#output")
+		output.removeAttribute("hidden")
+		const outputData = document.querySelectorAll(".obfuscated-data") as List<dynamic>
+		for element in outputData {
+			element.innerText = encoded
+		}
+	})
+}
+
+def ondeobfuscate(event dynamic) {
+	event.preventDefault()
+
+	const submitButton = document.querySelector("#deobfuscate button")
+	if submitButton.disabled {
+		return
+	}
+
+	disable(submitButton)
+
+	const output = document.querySelector("#deobfuscated-output")
+	output.setAttribute("hidden", "")
+
+	const input = document.querySelector("#deobfuscate-input")
+	const encoded = input.value as string
+	const decoded = decodeBase64(encoded)
+
+	const start = performance.now()
+
+	const decrypter = Decrypter.fromData(decoded)
+	log("Nonce: \(decrypter.nonce.slice())")
+	log("Ciphertext: \(decrypter.ciphertext.slice())")
+
+	decrypter.shuffleKey
+	decrypter.decrypt((done) => {
+		output.removeAttribute("hidden")
+		const outputData = document.querySelector("#deobfuscated-data")
+		outputData.value = done
+
+		enable(submitButton)
+
+		const end = performance.now()
+
+		const speedOutput = document.querySelector("#deobfuscated-speed")
+		const duration = end - start
+		speedOutput.textContent = "Deobfuscated in \(((duration as dynamic) / 1000).toFixed(3))s."
+	})
+}
+
+def construct(data string, keyspace int) dynamic {
+	var key = Uint8Array.new(32)
+	var nonce = Uint8Array.new(12)
+
+	crypto.getRandomValues(key)
+	crypto.getRandomValues(nonce)
+
+	var encoder = TextEncoder.new()
+	var plaintextArray = encoder.encode(data)
+
+	return crypto.subtle.importKey(
+		"raw",
+		key,
+		{ "name": "AES-GCM" },
+		false,
+		["encrypt"]
+	).then((key) => {
+		return crypto.subtle.encrypt(
+			{
+				"name": "AES-GCM",
+				"iv": nonce
+			},
+			key,
+			plaintextArray
+		)
+	}).then((ciphertextBuffer) => {
+		var ciphertextArray = Uint8Array.new(ciphertextBuffer)
+		var result = Uint8Array.new(1 + 32 + 12 + ciphertextArray.length)
+
+		log("Obfuscating with keyspace \(keyspace) bits.")
+		log("Original key before masking: \(key.slice())")
+		log("Nonce: \(nonce.slice())")
+		log("Plaintext: \(plaintextArray.slice())")
+		log("Ciphertext: \(ciphertextArray.slice())")
+
+		for i in 0 .. keyspace {
+			key[i >> 3] &= ~(1 << (i & 7))
+		}
+
+		result[0] = keyspace
+		result.set(key, 1)
+		result.set(nonce, 33)
+		result.set(ciphertextArray, 45)
+		return encodeBase64(result)
+	})
+}
+
+@import
+var TextEncoder dynamic
+
+def disable(element dynamic) {
+	element.disabled = true
+	element.setAttribute("aria-busy", "true")
+}
+
+def enable(element dynamic) {
+	element.disabled = false
+	element.removeAttribute("aria-busy")
+}

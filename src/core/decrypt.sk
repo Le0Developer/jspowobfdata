@@ -1,0 +1,62 @@
+
+class Decrypter {
+	var keyspace int
+	var key Uint8Array
+	var nonce Uint8Array
+	var ciphertext Uint8Array
+
+	var ctr = 0
+
+	def decrypt(fn fn(string)) {
+		log("Trying decryption attempt \(ctr)...")
+		log("Current key: \(key.slice())")
+
+		crypto.subtle.importKey(
+			"raw",
+			key,
+			{ "name": "AES-GCM" },
+			false,
+			["decrypt"]
+		).then((key) => {
+			return crypto.subtle.decrypt(
+				{
+					"name": "AES-GCM",
+					"iv": nonce
+				},
+				key,
+				ciphertext
+			)
+		}).then((plaintextBuffer) => {
+			const decoder = TextDecoder.new("utf-8")
+			const plaintextArray = Uint8Array.new(plaintextBuffer)
+			const plaintext = decoder.decode(plaintextArray)
+			log("decrypted after \(ctr) attempts: \(plaintext)")
+			fn(plaintext)
+		})["catch"]((err) => {
+			shuffleKey
+			if (++ctr & 0xfff) == 0 {
+				dynamic.setTimeout(() => decrypt(fn), 10)
+			} else {
+				decrypt(fn)
+			}
+		})
+	}
+
+	def shuffleKey {
+		const rng = (Math.random * (-1 as dynamic >>> 0)) as int
+		for i in 0 .. keyspace {
+			key[i >> 3] ^= ((rng >>> i) & 1) << (i & 7)
+		}
+	}
+}
+
+namespace Decrypter {
+	def fromData(data Uint8Array) Decrypter {
+		return Decrypter.new(
+			data[0] as int,
+			data.slice(1, 33),
+			data.slice(33, 45),
+			data.slice(45)
+		)
+	}
+}
