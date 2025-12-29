@@ -1,21 +1,15 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.1.1/css/pico.classless.jade.min.css"
       integrity="sha256-uy1ltDBeVXSaE/PVXPo/KKSLhYTmm6eVoPB12lBXn64="
       crossorigin="anonymous"
     />
-    <script
-      src="script.js"
-      defer
-    ></script>
+    <script src="script.js" defer></script>
     <title>Obfuscate</title>
   </head>
   <body class="container">
@@ -63,10 +57,7 @@
         </form>
       </section>
 
-      <section
-        hidden
-        id="output"
-      >
+      <section hidden id="output">
         <h2>Obfuscated Data</h2>
         <label for="obfuscated-output">Obfuscated Data</label>
         <textarea
@@ -82,11 +73,11 @@
           <p>
             To embed the obfuscated data into your webpage, create an HTML
             element (like a &lt;div&gt; or &lt;span&gt;) and add the attribute
-            <code>jspowobfdata</code> with the obfuscated data as its value. For
+            <code>d-obf</code> with the obfuscated data as its value. For
             example:
           </p>
           <pre>
-            <code>&lt;button jspowobfdata="<span class="obfuscated-data"></span>"&gt;<br>  Click to decrypt<br>&lt;/button&gt;</code>
+            <code>&lt;button d-obf="<span class="obfuscated-data"></span>"&gt;<br>  Click to decrypt<br>&lt;/button&gt;</code>
           </pre>
           <p>
             You also need to include the JavaScript file that handles the
@@ -130,10 +121,7 @@
         </form>
       </section>
 
-      <section
-        hidden
-        id="deobfuscated-output"
-      >
+      <section hidden id="deobfuscated-output">
         <h2>Deobfuscated Data</h2>
         <label for="deobfuscated-data">Deobfuscated Data</label>
         <textarea

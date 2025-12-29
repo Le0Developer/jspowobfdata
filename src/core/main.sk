@@ -1,4 +1,4 @@
-const NAME = "jspowobfdata"
+const NAME = "d-obf"
 
 @entry if !IS_WEBPAGE
 def entrypoint {
