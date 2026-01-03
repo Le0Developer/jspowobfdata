@@ -1,5 +1,6 @@
 SKEWC ?= npx skewc
-SKEW_OPTIONS ?= --release
+SKEW_EXTRA_OPTIONS ?=
+SKEW_OPTIONS ?= --release $(SKEW_EXTRA_OPTIONS)
 TERSER ?= npx terser
 SWC ?= npx swc
 GZIP ?= gzip --best -k
@@ -7,13 +8,18 @@ BROTLI ?= brotli -Z
 
 FILES = $(wildcard src/*.sk src/**/*.sk)
 
-.PHONY: build minify copy dist
+.PHONY: all default build build-all minify copy dist
 
-all: build minify copy dist
+default: build minify copy dist
+all: build-all minify
 
 build:
 	$(SKEWC) $(SKEW_OPTIONS) --output-file=dist/main.js --define:BTARGET=MAIN $(FILES)
 	$(SKEWC) $(SKEW_OPTIONS) --output-file=dist/page.js --define:BTARGET=PAGE $(FILES)
+
+build-all: build
+	$(SKEWC) $(SKEW_OPTIONS) --output-file=dist/weblib.js --define:BTARGET=WEBLIB $(FILES)
+
 
 minify:
 	for file in `ls dist`; do $(SWC) dist/$$file -o dist/$$file; done

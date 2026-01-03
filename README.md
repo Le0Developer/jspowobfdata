@@ -52,6 +52,22 @@ The obfuscation process involves the following steps:
 
 5. Package the obfuscated data, nonce, and puzzle.
 
+## Extra libraries
+
+There are some extra libraries available in this repo, but you need to clone and
+build them yourself using `make all`. They will be in the `dist/` folder after
+building.
+
+- `main.js` - The main runtime script to deobfuscate data in the browser. (see
+  table above for size)
+- `page.js` - The runtime script for the demo page. Almost 4kb due to UI
+  handling, generation and speedtest. You shouldn't need to ever use this.
+- `weblib.js` - This has the runtime logic like `main.js`, but it only exposes a
+  minimal Javascript API and doesn't interact with the DOM by default. This
+  makes it a further ~300 bytes smaller than `main.js`. By default it exports as
+  a global `jsobfpow` function, but you can change that with build time flags.
+  See `src/bundles/weblib.sk` for details.
+
 ## References
 
 This is inspired by

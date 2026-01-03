@@ -3,4 +3,5 @@ const BTARGET = BuildTarget.MAIN
 enum BuildTarget {
   MAIN
   PAGE
+  WEBLIB
 }

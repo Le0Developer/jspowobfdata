@@ -1,0 +1,13 @@
+# Allows you to override the default export name for the weblib target (on the window object).
+# Use `SKEW_EXTRA_OPTIONS="--define:WEBLIB_EXPORT_NAME=yourname" make build-all` to override it.
+const WEBLIB_EXPORT_NAME = "jspowobf"
+
+@export if BTARGET == .WEBLIB
+@rename(WEBLIB_EXPORT_NAME)
+def weblibExport(input string, cb fn(string)) {
+  const decoded = base64.decode(input)
+  const decrypter = Decrypter.fromData(decoded)
+  decrypter.initKey
+  decrypter.decrypt(cb)
+}
+
