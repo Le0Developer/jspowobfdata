@@ -17,7 +17,7 @@ namespace main {
     if !encoded {
       return
     }
-    const decoded = decodeBase64(encoded)
+    const decoded = base64.decode(encoded)
 
     # remove attribute to prevent multiple clicks
     element.removeAttribute(NAME)

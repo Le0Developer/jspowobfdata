@@ -73,7 +73,7 @@ namespace page {
 
     const input = document.querySelector("#deobfuscate-input")
     const encoded = input.value as string
-    const decoded = decodeBase64(encoded)
+    const decoded = base64.decode(encoded)
 
     const start = performance.now()
 
@@ -140,7 +140,7 @@ namespace page {
       result.set(key, 1)
       result.set(nonce, 33)
       result.set(ciphertextArray, 45)
-      return encodeBase64(result)
+      return base64.encode(result)
     })
   }
 }
