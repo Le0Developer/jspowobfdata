@@ -7,21 +7,24 @@ BROTLI ?= brotli -Z
 
 FILES = $(wildcard src/*.sk src/**/*.sk)
 
-.PHONY: build minify dist
+.PHONY: build minify copy dist
 
-all: build minify dist
+all: build minify copy dist
 
 build:
-	$(SKEWC) $(SKEW_OPTIONS) --output-file=script.js --define:BTARGET=MAIN $(FILES)
-	$(SKEWC) $(SKEW_OPTIONS) --output-file=docs/script.js --define:BTARGET=PAGE $(FILES)
+	$(SKEWC) $(SKEW_OPTIONS) --output-file=dist/main.js --define:BTARGET=MAIN $(FILES)
+	$(SKEWC) $(SKEW_OPTIONS) --output-file=dist/page.js --define:BTARGET=PAGE $(FILES)
 
 minify:
-	$(SWC) script.js -o script.js
-	$(TERSER) script.js -o script.js --compress --mangle
+	for file in `ls dist`; do $(SWC) dist/$$file -o dist/$$file; done
+	for file in `ls dist`; do $(TERSER) dist/$$file -o dist/$$file --compress --mangle; done
+
+copy:
+	cp dist/page.js docs/script.js
+	cp dist/main.js docs/dist/script.min.js
 
 dist:
-	rm -rf docs/dist
-	mkdir -p docs/dist
-	cp script.js docs/dist/script.min.js
+	rm docs/dist/script.min.js.gz || true
+	rm docs/dist/script.min.js.br || true
 	$(GZIP) docs/dist/script.min.js
 	$(BROTLI) docs/dist/script.min.js
