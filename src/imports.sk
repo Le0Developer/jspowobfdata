@@ -1,0 +1,8 @@
+@import {
+  var document dynamic
+  var Uint8Array dynamic
+  var TextEncoder dynamic
+  var TextDecoder dynamic
+  var crypto dynamic
+  var performance dynamic
+}

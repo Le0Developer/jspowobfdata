@@ -1,0 +1,32 @@
+namespace main {
+  const NAME = "d-obf"
+
+  @entry if BTARGET == .MAIN
+  def entrypoint {
+    const data = document.querySelectorAll("[\(NAME)]") as List<dynamic>
+    for element in data {
+      element.addEventListener("click", (ev) => onclick(ev))
+    }
+  }
+
+  def onclick(event dynamic) {
+    event.preventDefault()
+
+    const element = event.target
+    const encoded = element.getAttribute(NAME)
+    if !encoded {
+      return
+    }
+    const decoded = decodeBase64(encoded)
+
+    # remove attribute to prevent multiple clicks
+    element.removeAttribute(NAME)
+    dom.disable(element)
+
+    const decrypter = Decrypter.fromData(decoded)
+    decrypter.initKey
+    decrypter.decrypt((done) => {
+      element.outerHTML = done
+    })
+  }
+}

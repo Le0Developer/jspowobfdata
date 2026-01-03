@@ -1,0 +1,11 @@
+namespace dom {
+  def disable(element dynamic) {
+    element.disabled = true
+    element.setAttribute("aria-busy", "true")
+  }
+
+  def enable(element dynamic) {
+    element.disabled = false
+    element.removeAttribute("aria-busy")
+  }
+}

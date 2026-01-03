@@ -1,1 +1,6 @@
-const IS_WEBPAGE = false
+const BTARGET = BuildTarget.MAIN
+
+enum BuildTarget {
+  MAIN
+  PAGE
+}

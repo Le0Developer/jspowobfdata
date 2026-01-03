@@ -2,17 +2,18 @@ SKEWC ?= npx skewc
 SKEW_OPTIONS ?= --release
 TERSER ?= npx terser
 SWC ?= npx swc
-FILES ?= src/*.sk src/**/*.sk
 GZIP ?= gzip --best -k
 BROTLI ?= brotli -Z
+
+FILES = $(wildcard src/*.sk src/**/*.sk)
 
 .PHONY: build minify dist
 
 all: build minify dist
 
 build:
-	$(SKEWC) $(SKEW_OPTIONS) --output-file=docs/script.js --define:IS_WEBPAGE=true $(FILES)
-	$(SKEWC) $(SKEW_OPTIONS) --output-file=script.js $(FILES)
+	$(SKEWC) $(SKEW_OPTIONS) --output-file=script.js --define:BTARGET=MAIN $(FILES)
+	$(SKEWC) $(SKEW_OPTIONS) --output-file=docs/script.js --define:BTARGET=PAGE $(FILES)
 
 minify:
 	$(SWC) script.js -o script.js
