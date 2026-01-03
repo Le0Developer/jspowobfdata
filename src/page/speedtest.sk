@@ -51,8 +51,8 @@ class Simulator {
 				plaintext
 			)
 		}).then(() => {
-			if (ctr & 0xfff) == 0 {
-				dynamic.setTimeout(() => simulate(cb), 0)
+			if (ctr & YIELD_OPERATIONS) == 0 {
+				dynamic.setTimeout(() => simulate(cb), YIELD_DURATION)
 			} else {
 				simulate(cb)
 			}

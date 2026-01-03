@@ -1,4 +1,6 @@
-@skip if RELEASE
+const LOGGING = false
+
+@skip if RELEASE && !LOGGING
 def log(msg string) {
 	dynamic.console.log(msg)
 }

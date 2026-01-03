@@ -1,3 +1,5 @@
+const YIELD_OPERATIONS = 0x1fff
+const YIELD_DURATION = 1
 
 class Decrypter {
 	var keyspace int
@@ -34,8 +36,8 @@ class Decrypter {
 			fn(plaintext)
 		})["catch"]((err) => {
       nextKey
-			if (++ctr & 0xfff) == 0 {
-				dynamic.setTimeout(() => decrypt(fn), 10)
+			if (++ctr & YIELD_OPERATIONS) == 0 {
+				dynamic.setTimeout(() => decrypt(fn), YIELD_DURATION)
 			} else {
 				decrypt(fn)
 			}

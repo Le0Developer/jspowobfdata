@@ -18,6 +18,7 @@ def webpage {
 		disable(estimateSpeedButton)
 		performSpeedTest((speed) => {
 			estimatedSpeed = speed as int
+      log("estimated speed: \(estimatedSpeed) ops/sec")
 			onupdate
 			estimateSpeedButton.remove()
 		})
