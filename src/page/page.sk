@@ -33,9 +33,9 @@ def onupdate {
 
 	if estimatedSpeed > 0 {
 		const totalOps = 2.0 ** value
-		const seconds = totalOps / estimatedSpeed
+		const seconds = totalOps / estimatedSpeed / 2 # average case is half
 
-		keyspaceEstimate.textContent = "\(value) bits. Estimated bruteforce time: \((seconds as dynamic).toFixed(3)) seconds. Can vary a lot based on luck."
+		keyspaceEstimate.textContent = "\(value) bits. Estimated bruteforce time: \((seconds as dynamic).toFixed(3)) seconds."
 	}
 }
 
@@ -80,7 +80,7 @@ def ondeobfuscate(event dynamic) {
 	log("Nonce: \(decrypter.nonce.slice())")
 	log("Ciphertext: \(decrypter.ciphertext.slice())")
 
-	decrypter.shuffleKey
+	decrypter.initKey
 	decrypter.decrypt((done) => {
 		output.removeAttribute("hidden")
 		const outputData = document.querySelector("#deobfuscated-data")

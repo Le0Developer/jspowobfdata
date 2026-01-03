@@ -33,7 +33,7 @@ class Decrypter {
 			log("decrypted after \(ctr) attempts: \(plaintext)")
 			fn(plaintext)
 		})["catch"]((err) => {
-			shuffleKey
+      nextKey
 			if (++ctr & 0xfff) == 0 {
 				dynamic.setTimeout(() => decrypt(fn), 10)
 			} else {
@@ -42,11 +42,23 @@ class Decrypter {
 		})
 	}
 
-	def shuffleKey {
+  def initKey {
 		const rng = (Math.random * (-1 as dynamic >>> 0)) as int
 		for i in 0 .. keyspace {
 			key[i >> 3] ^= ((rng >>> i) & 1) << (i & 7)
 		}
+  }
+
+	def nextKey {
+    # increment key. yes this is slightly cursed
+    # using a variable is 3 bytes longer, but compresses better
+    var shift int
+    for i in 0 .. keyspace {
+      shift = (1 << (i & 7))
+      if (key[i >> 3] ^= shift) & shift as dynamic {
+        break
+      }
+    }
 	}
 }
 

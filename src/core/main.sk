@@ -23,7 +23,7 @@ def onclick(event dynamic) {
 	disable(element)
 
 	const decrypter = Decrypter.fromData(decoded)
-	decrypter.shuffleKey
+	decrypter.initKey
 	decrypter.decrypt((done) => {
 		element.outerHTML = done
 	})
