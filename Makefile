@@ -6,6 +6,11 @@ SWC ?= npx swc
 GZIP ?= gzip --best -k
 BROTLI ?= brotli -Z
 FILESIZE ?= stat --format=%s
+MODERN ?= 0
+
+ifeq ($(MODERN), 1)
+	SKEW_OPTIONS += --define:NATIVE_BASE64=true
+endif
 
 FILES = $(wildcard src/*.sk src/**/*.sk)
 

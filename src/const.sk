@@ -11,3 +11,9 @@ const IMPLEMENTATION = Implementation.SUBTLECRYPTO
 enum Implementation {
   SUBTLECRYPTO
 }
+
+# Use native Uint8Array.fromBase64 and toBase64 methods if available. Saves around 400 bytes.
+# For compatibility reasons, this is disabled by default.
+# Compat: https://caniuse.com/mdn-javascript_builtins_uint8array_tobase64
+# (Widely available since September 2025)
+const NATIVE_BASE64 = false

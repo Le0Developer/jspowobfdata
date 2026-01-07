@@ -1,6 +1,10 @@
 namespace base64 {
   # based on https://github.com/evanw/esbuild/blob/cd832972927f1f67b6d2cc895c06a8759c1cf309/internal/runtime/runtime.go#L488-L502
   def decode(input string) Uint8Array {
+    if NATIVE_BASE64 {
+      return Uint8Array.fromBase64(input)
+    }
+
     var table = Uint8Array.new(128)
     for i in 0 .. 64 {
       # casts to double to prevent integer casts
@@ -26,6 +30,10 @@ namespace base64 {
 
   # encode isn't optimized as much, because it's not used in the main bundle
   def encode(data Uint8Array) string {
+    if NATIVE_BASE64 {
+      return data.toBase64()
+    }
+
     var table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".split("")
     var n = data.length
     var chars = List<string>.new
