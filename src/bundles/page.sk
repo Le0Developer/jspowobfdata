@@ -77,12 +77,7 @@ namespace page {
 
     const start = performance.now()
 
-    const decrypter = Decrypter.fromData(decoded)
-    log("Nonce: \(decrypter.nonce.slice())")
-    log("Ciphertext: \(decrypter.ciphertext.slice())")
-
-    decrypter.initKey
-    decrypter.decrypt((buffer) => {
+    decrypt.decrypt(decoded, (buffer) => {
       output.removeAttribute("hidden")
       const outputData = document.querySelector("#deobfuscated-data")
       outputData.value = TextDecoder.new().decode(Uint8Array.new(buffer))

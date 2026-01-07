@@ -1,0 +1,23 @@
+namespace decrypt {
+	type DecryptData : Uint8Array {
+		def arr dynamic {
+			return self
+		}
+
+		def keyspace int {
+			return arr[0]
+		}
+
+		def key Uint8Array {
+			return arr.slice(1, 33)
+		}
+
+		def nonce Uint8Array {
+			return arr.slice(33, 45)
+		}
+
+		def ciphertext Uint8Array {
+			return arr.slice(45)
+		}
+	}
+}

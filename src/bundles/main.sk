@@ -23,9 +23,7 @@ namespace main {
     element.removeAttribute(NAME)
     dom.disable(element)
 
-    const decrypter = Decrypter.fromData(decoded)
-    decrypter.initKey
-    decrypter.decrypt((buffer) => {
+    decrypt.decrypt(decoded, (buffer) => {
       element.outerHTML = TextDecoder.new().decode(Uint8Array.new(buffer))
     })
   }

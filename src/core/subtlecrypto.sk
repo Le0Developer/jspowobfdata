@@ -1,9 +1,14 @@
-if IMPLEMENTATION == .SUBTLECRYPTO {
-	class Decrypter {
-		def decrypt(fn fn(dynamic)) {
+namespace decrypt {
+	if IMPLEMENTATION == .SUBTLECRYPTO {
+		def decrypt(data DecryptData, fn fn(dynamic)) {
+			util.initKey(data)
+			_decrypt(data, fn, 0)
+		}
+
+		def _decrypt(data DecryptData, fn fn(dynamic), ctr int) {
 			crypto.subtle.importKey(
 				"raw",
-				key,
+				data.key,
 				{ "name": "AES-GCM" },
 				false,
 				["decrypt"]
@@ -11,12 +16,21 @@ if IMPLEMENTATION == .SUBTLECRYPTO {
 				return crypto.subtle.decrypt(
 					{
 						"name": "AES-GCM",
-						"iv": nonce
+						"iv": data.nonce
 					},
 					key,
-					ciphertext
+					data.ciphertext
 				)
-			}).then(fn)["catch"](() => next(fn))
+			}).then(fn)["catch"](() => {
+				util.nextKey(data)
+				if util.shouldYield(++ctr) {
+					util.yield(() => {
+						_decrypt(data, fn, ctr)
+					})
+				} else {
+					_decrypt(data, fn, ctr)
+				}
+			})
 		}
 	}
 }
