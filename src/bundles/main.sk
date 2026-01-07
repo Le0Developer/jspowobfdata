@@ -25,8 +25,8 @@ namespace main {
 
     const decrypter = Decrypter.fromData(decoded)
     decrypter.initKey
-    decrypter.decrypt((done) => {
-      element.outerHTML = done
+    decrypter.decrypt((buffer) => {
+      element.outerHTML = TextDecoder.new().decode(Uint8Array.new(buffer))
     })
   }
 }

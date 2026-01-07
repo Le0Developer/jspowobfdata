@@ -5,3 +5,9 @@ enum BuildTarget {
   PAGE
   WEBLIB
 }
+
+const IMPLEMENTATION = Implementation.SUBTLECRYPTO
+
+enum Implementation {
+  SUBTLECRYPTO
+}

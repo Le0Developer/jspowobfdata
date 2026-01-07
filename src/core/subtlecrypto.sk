@@ -1,0 +1,22 @@
+if IMPLEMENTATION == .SUBTLECRYPTO {
+	class Decrypter {
+		def decrypt(fn fn(dynamic)) {
+			crypto.subtle.importKey(
+				"raw",
+				key,
+				{ "name": "AES-GCM" },
+				false,
+				["decrypt"]
+			).then((key) => {
+				return crypto.subtle.decrypt(
+					{
+						"name": "AES-GCM",
+						"iv": nonce
+					},
+					key,
+					ciphertext
+				)
+			}).then(fn)["catch"](() => next(fn))
+		}
+	}
+}

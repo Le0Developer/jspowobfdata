@@ -9,39 +9,13 @@ class Decrypter {
 
 	var ctr = 0
 
-	def decrypt(fn fn(string)) {
-		log("Trying decryption attempt \(ctr)...")
-		log("Current key: \(key.slice())")
-
-		crypto.subtle.importKey(
-			"raw",
-			key,
-			{ "name": "AES-GCM" },
-			false,
-			["decrypt"]
-		).then((key) => {
-			return crypto.subtle.decrypt(
-				{
-					"name": "AES-GCM",
-					"iv": nonce
-				},
-				key,
-				ciphertext
-			)
-		}).then((plaintextBuffer) => {
-			const decoder = TextDecoder.new("utf-8")
-			const plaintextArray = Uint8Array.new(plaintextBuffer)
-			const plaintext = decoder.decode(plaintextArray)
-			log("decrypted after \(ctr) attempts: \(plaintext)")
-			fn(plaintext)
-		})["catch"]((err) => {
-      nextKey
-			if (++ctr & YIELD_OPERATIONS) == 0 {
-				dynamic.setTimeout(() => decrypt(fn), YIELD_DURATION)
-			} else {
-				decrypt(fn)
-			}
-		})
+	def next(fn fn(dynamic)) {
+		nextKey
+		if (++ctr & YIELD_OPERATIONS) == 0 {
+			dynamic.setTimeout(() => decrypt(fn), YIELD_DURATION)
+		} else {
+			decrypt(fn)
+		}
 	}
 
   def initKey {

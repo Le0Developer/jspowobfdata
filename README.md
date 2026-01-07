@@ -22,7 +22,7 @@ The script used at runtime to deobfuscate is approximately:
 
 | Minified | Gzipped | Brotli |
 | -------- | ------- | ------ |
-| 1361 B   | 751 B   | 648 B  |
+| 1325 B   | 729 B   | 633 B  |
 
 It works in all modern browsers that support the
 [Web Crypto API](https://caniuse.com/mdn-api_subtlecrypto) (Widely available

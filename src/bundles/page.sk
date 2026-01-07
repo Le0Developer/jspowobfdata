@@ -82,10 +82,10 @@ namespace page {
     log("Ciphertext: \(decrypter.ciphertext.slice())")
 
     decrypter.initKey
-    decrypter.decrypt((done) => {
+    decrypter.decrypt((buffer) => {
       output.removeAttribute("hidden")
       const outputData = document.querySelector("#deobfuscated-data")
-      outputData.value = done
+      outputData.value = TextDecoder.new().decode(Uint8Array.new(buffer))
 
       dom.enable(submitButton)
 

@@ -8,6 +8,5 @@ def weblibExport(input string, cb fn(string)) {
   const decoded = base64.decode(input)
   const decrypter = Decrypter.fromData(decoded)
   decrypter.initKey
-  decrypter.decrypt(cb)
+  decrypter.decrypt((buffer) => cb(TextDecoder.new().decode(Uint8Array.new(buffer))))
 }
-
