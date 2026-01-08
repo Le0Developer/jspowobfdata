@@ -1,6 +1,12 @@
 namespace decrypt {
 	if IMPLEMENTATION == .SUBTLECRYPTO {
 		def decrypt(data DecryptData, fn fn(dynamic)) {
+			subtlecrypto.decrypt(data, fn)
+		}
+	}
+
+	namespace subtlecrypto {
+		def decrypt(data DecryptData, fn fn(dynamic)) {
 			util.initKey(data)
 			_decrypt(data, fn, 0)
 		}
