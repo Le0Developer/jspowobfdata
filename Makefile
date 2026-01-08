@@ -5,7 +5,7 @@ TERSER ?= npx terser
 SWC ?= npx swc
 GZIP ?= gzip --best -k
 BROTLI ?= brotli -Z
-FILESIZE ?= stat -f %z
+FILESIZE ?= /usr/bin/stat -f %z
 MODERN ?= 0
 
 ifeq ($(MODERN), 1)
