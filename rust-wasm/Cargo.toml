@@ -11,7 +11,7 @@ aes-gcm = { version = "0.10.3", default-features = false, features = ["aes"] }
 crate-type = ["cdylib"]
 
 [profile.release]
-strip="debuginfo"
+strip = true
 opt-level = "z"     # Optimize for size
 lto = true          # Enable link-time optimization
 panic = "abort"     # Abort on panic to reduce binary size
