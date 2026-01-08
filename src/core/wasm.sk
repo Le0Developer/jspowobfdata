@@ -10,16 +10,25 @@ namespace decrypt {
 	namespace wasm {
 		var instantiatedWASM dynamic
 		var DEFAULT_WASM_IMPLEMENTATION = WASM_RUST
+		const DEFAULT_WASM_URL = ""
 
 		def loadDefaultWASM dynamic {
 			if instantiatedWASM == null {
-				instantiatedWASM = loadFreshWASM(DEFAULT_WASM_IMPLEMENTATION)
+				if DEFAULT_WASM_URL != "" {
+					instantiatedWASM = loadFreshWASMFromURL(DEFAULT_WASM_URL)
+				} else {
+					instantiatedWASM = loadFreshWASM(DEFAULT_WASM_IMPLEMENTATION)
+				}
 			}
 			return instantiatedWASM
 		}
 
 		def loadFreshWASM(wasm string) dynamic {
 			return WebAssembly.instantiate(base64.decode(wasm))
+		}
+
+		def loadFreshWASMFromURL(url string) dynamic {
+			return WebAssembly.instantiateStreaming(fetch(url))
 		}
 
 		def decrypt(data DecryptData, fn fn(dynamic), wasm dynamic) {

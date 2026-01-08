@@ -1,8 +1,4 @@
 @import {
- namespace wqaasm {
-
-	}
-
   var document dynamic
   var Uint8Array dynamic
   var TextEncoder dynamic
@@ -10,4 +6,5 @@
   var crypto dynamic
   var performance dynamic
   var WebAssembly dynamic
+  var fetch dynamic
 }
