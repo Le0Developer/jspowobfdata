@@ -1,0 +1,19 @@
+namespace decrypt {
+	if IMPLEMENTATION == .WASM_HYBRID {
+		def decrypt(data DecryptData, fn fn(dynamic)) {
+			if wasm.isWASMAvailable {
+				wasm.loadDefaultWASM.then((w) => {
+					wasm.decrypt(data, fn, w)
+				})
+			} else {
+				subtlecrypto.decrypt(data, fn)
+			}
+		}
+	}
+
+	namespace wasm {
+		def isWASMAvailable bool {
+			return dynamic.typeof(WebAssembly) != "undefined"
+		}
+	}
+}
