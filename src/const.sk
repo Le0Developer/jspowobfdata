@@ -15,7 +15,15 @@ enum Implementation {
   WASM_HYBRID
 }
 
+# Use Web Workers to offload decryption work from the main thread.
+# This increases bundle size by around 800 bytes.
+# Recommended if you use WASM implementations, since those don't yield
+# to the event loop during decryption.
 const WORKER = false
+# If true, we will be tolerant of the worker dying. This can happen due to CSP
+# restrictions or TOR browser settings. Note that this is different from window.Worker
+# simply being undefined, which is handled independently of this flag.
+const WORKER_TOLERANT = true
 
 # Use native Uint8Array.fromBase64 and toBase64 methods if available. Saves around 400 bytes.
 # For compatibility reasons, this is disabled by default.

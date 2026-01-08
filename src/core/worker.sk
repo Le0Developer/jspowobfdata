@@ -1,0 +1,97 @@
+namespace worker {
+	var script = WORKER && !isWorker ? document.currentScript : null
+	var worker Worker
+	var pendingRequests = 0
+	var requestCounter = 0
+
+	@skip if !WORKER
+	def decryptInWorker(data decrypt.DecryptData, fn fn(dynamic)) {
+		pendingRequests++
+		var id = ++requestCounter
+		startWorker
+
+		var onMessage fn(dynamic)
+		var onError fn()
+
+		onMessage = (ev dynamic) => {
+			var message = ev.data as Message
+			if message.id == id {
+				worker.removeEventListener("message", onMessage)
+				if WORKER_TOLERANT {
+					worker.removeEventListener("error", onError)
+				}
+				if --pendingRequests == 0 {
+					killWorker
+				}
+				fn(message.result)
+			}
+		}
+		worker.addEventListener("message", onMessage)
+
+		if WORKER_TOLERANT {
+			onError = () => {
+				decrypt.decrypt(data, fn)
+			}
+			worker.addEventListener("error", onError)
+		}
+
+		worker.postMessage(Message.new(id, data, null))
+	}
+
+	def source string {
+		# find the source code for the worker (it's our own file)
+		var src = script.src
+		if src is string && src != "" {
+			return src
+		}
+		# it has to be in the content itself if it's not in src
+		return "data:text/javascript;," + script.text
+	}
+
+	def delegateToWorker bool {
+		return WORKER && !isWorker && supportsWorkers
+	}
+
+	def isWorker bool {
+		return WORKER && dynamic.typeof(document) == "undefined"
+	}
+
+	var supportsWorkersFlag = true
+	def supportsWorkers bool {
+		return WORKER && dynamic.typeof(Worker) != "undefined" && supportsWorkersFlag
+	}
+
+	def startWorker Worker {
+		if worker == null {
+			worker = Worker.new(source)
+			if WORKER_TOLERANT {
+				worker.onerror = () => {
+					supportsWorkersFlag = false
+				}
+			}
+		}
+		return worker
+	}
+
+	def killWorker {
+		if worker != null {
+			worker.terminate()
+			worker = null
+		}
+	}
+
+	def workerEntry {
+		dynamic.addEventListener("message", (ev) => {
+			var data = ev.data as Message
+			decrypt.decrypt(data.data, (decrypted) => {
+				dynamic.postMessage(Message.new(data.id, null, decrypted))
+			})
+		})
+	}
+
+	class Message {
+		var id int
+		var data decrypt.DecryptData
+		var result Uint8Array
+	}
+}

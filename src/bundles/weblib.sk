@@ -2,6 +2,13 @@
 # Use `SKEW_EXTRA_OPTIONS="--define:WEBLIB_EXPORT_NAME=yourname" make build-all` to override it.
 const WEBLIB_EXPORT_NAME = "jspowobf"
 
+@entry if WORKER && BTARGET == .WEBLIB
+def entrypoint {
+  if worker.isWorker {
+    worker.workerEntry
+  }
+}
+
 @export if BTARGET == .WEBLIB
 @rename(WEBLIB_EXPORT_NAME)
 def weblibExport(input string, cb fn(string)) {

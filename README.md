@@ -28,6 +28,23 @@ It works in all modern browsers that support the
 [Web Crypto API](https://caniuse.com/mdn-api_subtlecrypto) (Widely available
 since 2017).
 
+## Modern build
+
+If you can spare some extra bytes and want better performance, you can use the
+modern build that uses WebAssembly and Web Workers. This build is around:
+
+| Minified | Gzipped | Brotli |
+| -------- | ------- | ------ |
+| 16791 B  | 7379 B  | 6391 B |
+
+To use the modern build, include the `MODERN=1` flag when building the library
+with `make`. The WASM implementation is ~5-6x faster than the pure SubtleCrypto
+implementation.
+
+If WASM or Workers are not supported, it will gracefully fall back to the pure
+SubtleCrypto implementation (however without yielding to the main event loop due
+to build flags).
+
 ## Animation
 
 The `aria-busy` attribute is used to indicate the deobfuscation process is

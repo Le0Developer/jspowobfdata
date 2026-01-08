@@ -3,6 +3,11 @@ namespace page {
 
   @entry if BTARGET == .PAGE
   def webpage {
+    if worker.isWorker {
+      worker.workerEntry
+      return
+    }
+
     const form = document.querySelector("#obfuscate")
     form.addEventListener("submit", (ev) => onsubmit(ev))
 

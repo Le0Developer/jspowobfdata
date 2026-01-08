@@ -1,6 +1,10 @@
 namespace decrypt {
 	if IMPLEMENTATION == .WASM_HYBRID {
 		def decrypt(data DecryptData, fn fn(dynamic)) {
+			if worker.delegateToWorker {
+				worker.decryptInWorker(data, fn)
+				return
+			}
 			if wasm.isWASMAvailable {
 				wasm.loadDefaultWASM.then((w) => {
 					wasm.decrypt(data, fn, w)

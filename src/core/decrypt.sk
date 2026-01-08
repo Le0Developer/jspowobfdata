@@ -4,7 +4,7 @@ const YIELD_DURATION = 1
 namespace decrypt {
 	namespace util {
 		def shouldYield(ctr int) bool {
-			return !speedtest.IS_SPEEDTEST && (ctr & YIELD_OPERATIONS) == 0
+			return !speedtest.IS_SPEEDTEST && !WORKER && (ctr & YIELD_OPERATIONS) == 0
 		}
 
 		def yield(fn fn()) {

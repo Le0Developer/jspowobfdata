@@ -7,4 +7,5 @@
   var performance dynamic
   var WebAssembly dynamic
   var fetch dynamic
+  var Worker dynamic
 }

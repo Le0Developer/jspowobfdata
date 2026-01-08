@@ -6,10 +6,10 @@ SWC ?= npx swc
 GZIP ?= gzip --best -k
 BROTLI ?= brotli -Z
 FILESIZE ?= /usr/bin/stat -f %z
-MODERN ?= 0
+MODERN ?=
 
-ifeq ($(MODERN), 1)
-	SKEW_OPTIONS += --define:NATIVE_BASE64=true
+ifdef MODERN
+	SKEW_OPTIONS += --define:IMPLEMENTATION=WASM_HYBRID --define:WORKER=true
 endif
 
 FILES = $(wildcard src/*.sk src/**/*.sk)

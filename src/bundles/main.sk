@@ -3,6 +3,11 @@ namespace main {
 
   @entry if BTARGET == .MAIN
   def entrypoint {
+    if worker.isWorker {
+      worker.workerEntry
+      return
+    }
+
     const data = document.querySelectorAll("[\(NAME)]") as List<dynamic>
     for element in data {
       element.addEventListener("click", (ev) => onclick(ev))
