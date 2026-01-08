@@ -8,6 +8,9 @@ namespace decrypt {
 			if wasm.isWASMAvailable {
 				wasm.loadDefaultWASM.then((w) => {
 					wasm.decrypt(data, fn, w)
+				}, () => {
+					wasm.supportsWasmFlag = false
+					subtlecrypto.decrypt(data, fn)
 				})
 			} else {
 				subtlecrypto.decrypt(data, fn)
@@ -16,8 +19,9 @@ namespace decrypt {
 	}
 
 	namespace wasm {
+		var supportsWasmFlag = true
 		def isWASMAvailable bool {
-			return dynamic.typeof(WebAssembly) != "undefined"
+			return dynamic.typeof(WebAssembly) != "undefined" && supportsWasmFlag
 		}
 	}
 }
