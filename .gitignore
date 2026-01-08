@@ -1,5 +1,6 @@
 node_modules/
 /dist
+src/core/*wasm_data.sk
 
 ._*
 .DS_Store

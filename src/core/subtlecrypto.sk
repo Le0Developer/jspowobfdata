@@ -21,7 +21,10 @@ namespace decrypt {
 					key,
 					data.ciphertext
 				)
-			}).then(fn)["catch"](() => {
+			}).then(HAS_LOGGING ? (r) => {
+				log("\(ctr) steps")
+				fn(r)
+			} : fn)["catch"](() => {
 				util.nextKey(data)
 				if util.shouldYield(++ctr) {
 					util.yield(() => {

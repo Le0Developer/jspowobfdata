@@ -1,0 +1,17 @@
+[package]
+name = "rust-wasm"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+aes-gcm = { version = "0.10.3", default-features = false, features = ["aes"] }
+# getrandom = { version = "*", features = ["js"] }
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+strip="debuginfo"
+opt-level = "z"     # Optimize for size
+lto = true          # Enable link-time optimization
+panic = "abort"     # Abort on panic to reduce binary size

@@ -1,0 +1,7 @@
+.{
+    .name = .zig_wasm,
+    .version = "0.0.1",
+    .minimum_zig_version = "0.15.2",
+    .paths = .{""},
+    .fingerprint = 0x61c2321da99b32ba,
+}

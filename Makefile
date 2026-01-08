@@ -14,7 +14,7 @@ endif
 
 FILES = $(wildcard src/*.sk src/**/*.sk)
 
-.PHONY: all default build build-all minify compr copy
+.PHONY: all default build build-all minify compr copy rust-wasm zig-wasm wasm
 
 default: build minify copy compr
 all: build-all minify
@@ -45,3 +45,21 @@ compr:
 	@echo "| -------- | ------- | ------ |"
 	@echo "| $$($(FILESIZE) dist/main.js) B | $$($(FILESIZE) dist/main.js.gz) B | $$($(FILESIZE) dist/main.js.br) B |"
 	@echo ""
+
+rust-wasm:
+	cd rust-wasm; cargo build --release
+	cp rust-wasm/target/wasm32-unknown-unknown/release/rust_wasm.wasm dist/rust_wasm.wasm
+
+	echo "Generated Rust WASM size: $$($(FILESIZE) dist/rust_wasm.wasm) B"
+
+	printf 'namespace decrypt {\n\tvar WASM_RUST = "%s"\n}\n' "$$(base64 -i dist/rust_wasm.wasm | tr -d '\n')" > src/core/rust_wasm_data.sk
+
+zig-wasm:
+	cd zig-wasm; zig build
+	cp zig-wasm/zig-out/bin/wasm.wasm dist/zig_wasm.wasm
+
+	echo "Generated Zig WASM size: $$($(FILESIZE) dist/zig_wasm.wasm) B"
+
+	printf 'namespace decrypt {\n\tvar WASM_ZIG = "%s"\n}\n' "$$(base64 -i dist/zig_wasm.wasm | tr -d '\n')" > src/core/zig_wasm_data.sk
+
+wasm: rust-wasm zig-wasm

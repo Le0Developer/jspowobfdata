@@ -10,6 +10,7 @@ const IMPLEMENTATION = Implementation.SUBTLECRYPTO
 
 enum Implementation {
   SUBTLECRYPTO
+  WASM
 }
 
 # Use native Uint8Array.fromBase64 and toBase64 methods if available. Saves around 400 bytes.

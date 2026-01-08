@@ -1,0 +1,45 @@
+namespace decrypt {
+	if IMPLEMENTATION == .WASM {
+		def decrypt(data DecryptData, fn fn(dynamic)) {
+			wasm.loadDefaultWASM.then((w) => {
+				wasm.decrypt(data, fn, w)
+			})
+		}
+	}
+
+	namespace wasm {
+		var instantiatedWASM dynamic
+		var DEFAULT_WASM_IMPLEMENTATION = WASM_RUST
+
+		def loadDefaultWASM dynamic {
+			if instantiatedWASM == null {
+				instantiatedWASM = loadFreshWASM(DEFAULT_WASM_IMPLEMENTATION)
+			}
+			return instantiatedWASM
+		}
+
+		def loadFreshWASM(wasm string) dynamic {
+			return WebAssembly.instantiate(base64.decode(wasm))
+		}
+
+		def decrypt(data DecryptData, fn fn(dynamic), wasm dynamic) {
+			util.initKey(data)
+			var dataLen = data.arr.length
+			var exports = wasm.instance.exports
+			var u8 = Uint8Array.new(exports.memory.buffer)
+
+			for i in 0 .. dataLen {
+				u8[i] = data.arr[i]
+			}
+
+			exports.decrypt(0, dataLen, dataLen + 1)
+			var decryptLength = data.arr.length - 61
+			var decrypted = Uint8Array.new(decryptLength)
+			for i in 0 .. decryptLength {
+				decrypted[i] = u8[1 + dataLen + i]
+			}
+
+			fn(decrypted)
+		}
+	}
+}

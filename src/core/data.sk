@@ -1,6 +1,6 @@
 namespace decrypt {
 	type DecryptData : Uint8Array {
-		def arr dynamic {
+		def arr Uint8Array {
 			return self
 		}
 
