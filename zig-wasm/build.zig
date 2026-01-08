@@ -10,7 +10,7 @@ pub fn build(b: *std.Build) void {
     const target = b.resolveTargetQuery(std.Target.Query.parse(
         .{ .arch_os_abi = "wasm32-freestanding" },
     ) catch unreachable);
-    const optimize = b.standardOptimizeOption(.{ .preferred_optimize_mode = .ReleaseFast });
+    const optimize = b.standardOptimizeOption(.{ .preferred_optimize_mode = .ReleaseSmall });
     const mod = b.addExecutable(.{
         .name = "wasm",
         .root_module = b.createModule(.{

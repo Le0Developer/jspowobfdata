@@ -5,7 +5,7 @@ TERSER ?= npx terser
 SWC ?= npx swc
 GZIP ?= gzip --best -k
 BROTLI ?= brotli -Z
-FILESIZE ?= stat --format=%s
+FILESIZE ?= stat -f %z
 MODERN ?= 0
 
 ifeq ($(MODERN), 1)
@@ -57,7 +57,7 @@ rust-wasm:
 	printf 'namespace decrypt.wasm {\n\tvar WASM_RUST = "%s"\n}\n' "$$(base64 -i dist/rust_wasm.wasm | tr -d '\n')" > src/core/rust_wasm_data.sk
 
 zig-wasm:
-	cd zig-wasm; zig build
+	cd zig-wasm; zig build -Drelease
 	cp zig-wasm/zig-out/bin/wasm.wasm dist/zig_wasm.wasm
 
 	echo "Generated Zig WASM size: $$($(FILESIZE) dist/zig_wasm.wasm) B"

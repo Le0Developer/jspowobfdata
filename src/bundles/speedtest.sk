@@ -77,6 +77,7 @@ namespace speedtest {
 			tests.sort((a, b) => a.duration > b.duration ? 1 : -1)
 
 			const fastest = tests[0].duration
+			const slowest = tests[tests.count - 1].duration
 
 			const resultsSection = document.querySelector("#results")
 			for test in tests {
@@ -86,11 +87,10 @@ namespace speedtest {
 					div.style.fontWeight = "bold"
 				} else {
 					div.textContent += " (\(((test.duration / fastest) as dynamic).toFixed(2))x slower)"
-
 				}
 
 				const progress = document.createElement("progress")
-				progress.value = fastest / test.duration
+				progress.value = test.duration / slowest
 				progress.max = 1.0
 				div.appendChild(progress)
 
