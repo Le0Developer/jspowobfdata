@@ -4,6 +4,7 @@ enum BuildTarget {
   MAIN
   PAGE
   WEBLIB
+  SPEEDTEST
 }
 
 const IMPLEMENTATION = Implementation.SUBTLECRYPTO

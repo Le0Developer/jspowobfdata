@@ -1,0 +1,40 @@
+namespace encrypt {
+	def encrypt(data string, keyspace int) dynamic {
+		return encrypt(TextEncoder.new().encode(data) as Uint8Array, keyspace)
+	}
+
+  def encrypt(data Uint8Array, keyspace int) dynamic {
+    var keyAndNonce = Uint8Array.new(44)
+
+    crypto.getRandomValues(keyAndNonce)
+
+    return crypto.subtle.importKey(
+      "raw",
+      keyAndNonce.slice(0, 32),
+      { "name": "AES-GCM" },
+      false,
+      ["encrypt"]
+    ).then((key) => {
+      return crypto.subtle.encrypt(
+        {
+          "name": "AES-GCM",
+          "iv": keyAndNonce.slice(32)
+        },
+        key,
+        data
+      )
+    }).then((ciphertextBuffer) => {
+      var ciphertextArray = Uint8Array.new(ciphertextBuffer)
+      var result = Uint8Array.new(1 + 32 + 12 + ciphertextArray.length)
+
+      for i in 0 .. keyspace {
+        keyAndNonce[i >> 3] &= ~(1 << (i & 7))
+      }
+
+      result[0] = keyspace
+      result.set(keyAndNonce, 1)
+      result.set(ciphertextArray, 1 + 32 + 12)
+      return base64.encode(result)
+    })
+	}
+}

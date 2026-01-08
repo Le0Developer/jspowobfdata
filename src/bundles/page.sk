@@ -48,7 +48,7 @@ namespace page {
     const data = input.value as string
     const keyspace = dynamic.parseInt(keyspaceInput.value) as int
 
-    construct(data, keyspace).then((encoded) => {
+    encrypt.encrypt(data, keyspace).then((encoded) => {
       const output = document.querySelector("#output")
       output.removeAttribute("hidden")
       const outputData = document.querySelectorAll(".obfuscated-data") as List<dynamic>
@@ -89,53 +89,6 @@ namespace page {
       const speedOutput = document.querySelector("#deobfuscated-speed")
       const duration = end - start
       speedOutput.textContent = "Deobfuscated in \(((duration as dynamic) / 1000).toFixed(3))s."
-    })
-  }
-
-  def construct(data string, keyspace int) dynamic {
-    var key = Uint8Array.new(32)
-    var nonce = Uint8Array.new(12)
-
-    crypto.getRandomValues(key)
-    crypto.getRandomValues(nonce)
-
-    var encoder = TextEncoder.new()
-    var plaintextArray = encoder.encode(data)
-
-    return crypto.subtle.importKey(
-      "raw",
-      key,
-      { "name": "AES-GCM" },
-      false,
-      ["encrypt"]
-    ).then((key) => {
-      return crypto.subtle.encrypt(
-        {
-          "name": "AES-GCM",
-          "iv": nonce
-        },
-        key,
-        plaintextArray
-      )
-    }).then((ciphertextBuffer) => {
-      var ciphertextArray = Uint8Array.new(ciphertextBuffer)
-      var result = Uint8Array.new(1 + 32 + 12 + ciphertextArray.length)
-
-      log("Obfuscating with keyspace \(keyspace) bits.")
-      log("Original key before masking: \(key.slice())")
-      log("Nonce: \(nonce.slice())")
-      log("Plaintext: \(plaintextArray.slice())")
-      log("Ciphertext: \(ciphertextArray.slice())")
-
-      for i in 0 .. keyspace {
-        key[i >> 3] &= ~(1 << (i & 7))
-      }
-
-      result[0] = keyspace
-      result.set(key, 1)
-      result.set(nonce, 33)
-      result.set(ciphertextArray, 45)
-      return base64.encode(result)
     })
   }
 }

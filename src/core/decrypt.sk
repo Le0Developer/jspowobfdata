@@ -4,7 +4,7 @@ const YIELD_DURATION = 1
 namespace decrypt {
 	namespace util {
 		def shouldYield(ctr int) bool {
-			return (ctr & YIELD_OPERATIONS) == 0
+			return !speedtest.IS_SPEEDTEST && (ctr & YIELD_OPERATIONS) == 0
 		}
 
 		def yield(fn fn()) {
@@ -12,6 +12,10 @@ namespace decrypt {
 		}
 
 		def initKey(data DecryptData) {
+			if speedtest.IS_SPEEDTEST {
+				# don't randomize key in speedtest mode, since we want comparable results
+				return
+			}
 			const rng = (Math.random * (-1 as dynamic >>> 0)) as int
 			for i in 0 .. data.keyspace {
 				data.key[i >> 3] ^= ((rng >>> i) & 1) << (i & 7)

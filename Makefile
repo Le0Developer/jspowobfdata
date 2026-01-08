@@ -22,6 +22,7 @@ all: build-all minify
 build:
 	$(SKEWC) $(SKEW_OPTIONS) --output-file=dist/main.js --define:BTARGET=MAIN $(FILES)
 	$(SKEWC) $(SKEW_OPTIONS) --output-file=dist/page.js --define:BTARGET=PAGE $(FILES)
+	$(SKEWC) $(SKEW_OPTIONS) --output-file=dist/speedtest.js --define:BTARGET=SPEEDTEST $(FILES)
 
 build-all: build
 	$(SKEWC) $(SKEW_OPTIONS) --output-file=dist/weblib.js --define:BTARGET=WEBLIB $(FILES)
@@ -33,6 +34,7 @@ minify:
 copy:
 	cp dist/page.js docs/script.js
 	cp dist/main.js docs/dist/script.min.js
+	cp dist/speedtest.js docs/speedtest.js
 
 compr:
 	rm dist/main.js.gz || true
@@ -52,7 +54,7 @@ rust-wasm:
 
 	echo "Generated Rust WASM size: $$($(FILESIZE) dist/rust_wasm.wasm) B"
 
-	printf 'namespace decrypt {\n\tvar WASM_RUST = "%s"\n}\n' "$$(base64 -i dist/rust_wasm.wasm | tr -d '\n')" > src/core/rust_wasm_data.sk
+	printf 'namespace decrypt.wasm {\n\tvar WASM_RUST = "%s"\n}\n' "$$(base64 -i dist/rust_wasm.wasm | tr -d '\n')" > src/core/rust_wasm_data.sk
 
 zig-wasm:
 	cd zig-wasm; zig build
@@ -60,6 +62,6 @@ zig-wasm:
 
 	echo "Generated Zig WASM size: $$($(FILESIZE) dist/zig_wasm.wasm) B"
 
-	printf 'namespace decrypt {\n\tvar WASM_ZIG = "%s"\n}\n' "$$(base64 -i dist/zig_wasm.wasm | tr -d '\n')" > src/core/zig_wasm_data.sk
+	printf 'namespace decrypt.wasm {\n\tvar WASM_ZIG = "%s"\n}\n' "$$(base64 -i dist/zig_wasm.wasm | tr -d '\n')" > src/core/zig_wasm_data.sk
 
 wasm: rust-wasm zig-wasm

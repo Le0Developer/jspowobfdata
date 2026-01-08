@@ -1,0 +1,119 @@
+namespace speedtest {
+	const IS_SPEEDTEST = BTARGET == .SPEEDTEST
+
+	const TEST_STRING = "FgAAgBq962aWtUgtbmTnVHZvj71kVqm7UceYRbKxzFooSYHCxLempB4sPiPTlFjJjW3BIGxmT+rxWgedgEz9M3I="
+
+	@entry if IS_SPEEDTEST
+  def entrypoint {
+		var speedtest = Speedtest.new
+
+		speedtest.registerTest("subtlecrypto", (done) => {
+			const state = base64.decode(TEST_STRING)
+			done((done) => {
+				decrypt.subtlecrypto.decrypt(state, (_) => done())
+			})
+		})
+		speedtest.registerTest("wasm:zig", (done) => {
+			const state = base64.decode(TEST_STRING)
+			decrypt.wasm.loadFreshWASM(decrypt.wasm.WASM_ZIG).then((w) => {
+				done((done) => {
+					decrypt.wasm.decrypt(state, (_) => done(), w)
+				})
+			})
+		})
+		speedtest.registerTest("wasm:rust", (done) => {
+			const state = base64.decode(TEST_STRING)
+			decrypt.wasm.loadFreshWASM(decrypt.wasm.WASM_RUST).then((w) => {
+				done((done) => {
+					decrypt.wasm.decrypt(state, (_) => done(), w)
+				})
+			})
+		})
+
+		var btn = document.querySelector("button")
+		btn.addEventListener("click", () => {
+			dom.disable(btn)
+			speedtest.run(() => {
+				log("Speedtest completed")
+				dom.enable(btn)
+			})
+		})
+  }
+
+	class Speedtest {
+		var index = 0
+		var tests = List<Test>.new
+		var cb fn() = null
+
+		def registerTest(name string, fn fn(fn(fn(fn())))) {
+			tests.append(Test.new(name, fn))
+		}
+
+		def run(cb fn()) {
+			self.cb = cb
+			index = 0
+			run
+		}
+
+		def run {
+			if done {
+				showResults
+				if cb != null {
+					cb()
+				}
+				return
+			}
+			const test = tests[index]
+			index++
+
+			test.run(() => run)
+		}
+
+		def done bool {
+			return index >= tests.count
+		}
+
+		def showResults {
+			tests.sort((a, b) => a.duration > b.duration ? 1 : -1)
+
+			const fastest = tests[0].duration
+
+			const resultsSection = document.querySelector("#results")
+			for test in tests {
+				const div = document.createElement("div")
+				div.textContent = "Test '\(test.name)' completed in \(Math.round(test.duration)) ms"
+				if test.duration == fastest {
+					div.style.fontWeight = "bold"
+				} else {
+					div.textContent += " (\(((test.duration / fastest) as dynamic).toFixed(2))x slower)"
+
+				}
+
+				const progress = document.createElement("progress")
+				progress.value = fastest / test.duration
+				progress.max = 1.0
+				div.appendChild(progress)
+
+				resultsSection.appendChild(div)
+			}
+		}
+	}
+
+	class Test {
+		var name string
+		var fn fn(fn(fn(fn())))
+		var duration double = -1
+
+		def run(cb fn()) {
+			fn((run) => {
+				const start = performance.now()
+				run(() => {
+					const end = performance.now()
+					duration = end - start
+					log("Test '\(name)' completed in \(duration) ms")
+					cb()
+				})
+			})
+		}
+	}
+}
