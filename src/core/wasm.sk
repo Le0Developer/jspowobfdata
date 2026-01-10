@@ -32,6 +32,9 @@ namespace decrypt {
 		}
 
 		def loadFreshWASMFromURL(url string) dynamic {
+			if WORKER {
+				return WebAssembly.instantiateStreaming(fetch(URL.new(url, location.origin)))
+			}
 			return WebAssembly.instantiateStreaming(fetch(url))
 		}
 

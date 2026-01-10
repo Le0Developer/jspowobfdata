@@ -11,4 +11,5 @@
   var Blob dynamic
   var URL dynamic
   var navigator dynamic
+  var location dynamic
 }
