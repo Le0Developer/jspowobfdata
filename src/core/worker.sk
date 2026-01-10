@@ -1,41 +1,12 @@
 namespace worker {
 	var script = WORKER && !isWorker ? document.currentScript : null
-	var worker Worker
+	var pool = List<Worker>.new as Pool
 	var pendingRequests = 0
 	var requestCounter = 0
 
 	@skip if !WORKER
 	def decryptInWorker(data decrypt.DecryptData, fn fn(dynamic)) {
-		pendingRequests++
-		var id = ++requestCounter
-		startWorker
-
-		var onMessage fn(dynamic)
-		var onError fn()
-
-		onMessage = (ev dynamic) => {
-			var message = ev.data as Message
-			if message.id == id {
-				worker.removeEventListener("message", onMessage)
-				if WORKER_TOLERANT {
-					worker.removeEventListener("error", onError)
-				}
-				if --pendingRequests == 0 {
-					killWorker
-				}
-				fn(message.result)
-			}
-		}
-		worker.addEventListener("message", onMessage)
-
-		if WORKER_TOLERANT {
-			onError = () => {
-				decrypt.decrypt(data, fn)
-			}
-			worker.addEventListener("error", onError)
-		}
-
-		worker.postMessage(Message.new(id, data, null))
+		pool.work(data, fn)
 	}
 
 	var blobbed string = null
@@ -80,23 +51,14 @@ namespace worker {
 		return WORKER && dynamic.typeof(Worker) != "undefined" && supportsWorkersFlag
 	}
 
-	def startWorker Worker {
-		if worker == null {
-			worker = Worker.new(source)
-			if WORKER_TOLERANT {
-				worker.onerror = () => {
-					supportsWorkersFlag = false
-				}
-			}
+	def getThreads int {
+		var cores = navigator.hardwareConcurrency as int
+		if cores < WORKER_SCALING_MIN {
+			cores = WORKER_SCALING_MIN
+		} else if cores > WORKER_SCALING_MAX {
+			cores = WORKER_SCALING_MAX
 		}
-		return worker
-	}
-
-	def killWorker {
-		if worker != null {
-			worker.terminate()
-			worker = null
-		}
+		return cores
 	}
 
 	def workerEntry {

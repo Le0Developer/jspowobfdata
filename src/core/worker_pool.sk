@@ -1,0 +1,90 @@
+namespace worker {
+	type Pool : List<Worker> {
+		def workers List<Worker> {
+			return self as List<Worker>
+		}
+
+		def work(data decrypt.DecryptData, fn fn(dynamic)) {
+			if ++pendingRequests == 1 {
+				startUp
+			}
+
+			const id = ++requestCounter
+			const msg = Message.new(id, data, null)
+
+			var onMessage fn(dynamic)
+			var onError fn()
+
+			onMessage = (ev dynamic) => {
+				var message = ev.data as Message
+				if message.id == id {
+					_removeEventListeners("message", onMessage)
+					if WORKER_TOLERANT {
+						_removeEventListeners("error", onError)
+					}
+					if --pendingRequests == 0 {
+						shutDown
+					}
+					fn(message.result)
+				}
+			}
+
+			if WORKER_TOLERANT {
+				onError = () => {
+					decrypt.decrypt(data, fn)
+				}
+			}
+
+			if !WORKER_SCALING {
+				first.addEventListener("message", onMessage)
+				if WORKER_TOLERANT {
+					first.addEventListener("error", onError)
+				}
+				first.postMessage(msg)
+				return
+			}
+			for w in workers {
+				w.addEventListener("message", onMessage)
+				if WORKER_TOLERANT {
+					w.addEventListener("error", onError)
+				}
+				w.postMessage(msg)
+			}
+		}
+
+		def _removeEventListeners(event string, handler dynamic) {
+			for w in workers {
+				w.removeEventListener(event, handler)
+			}
+		}
+
+		def startUp {
+			if !WORKER_SCALING {
+				_startNewWorker(0)
+				return
+			}
+			var threads = getThreads
+			for i in 0 .. threads {
+				_startNewWorker(i)
+			}
+		}
+
+		def _startNewWorker(i int) {
+			workers[i] = Worker.new(source)
+		}
+
+		def shutDown {
+			if !WORKER_SCALING {
+				first.terminate()
+				return
+			}
+			for w in workers {
+				w.terminate()
+			}
+		}
+
+		def first Worker {
+			return workers[0]
+		}
+	}
+}

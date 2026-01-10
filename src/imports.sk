@@ -10,4 +10,5 @@
   var Worker dynamic
   var Blob dynamic
   var URL dynamic
+  var navigator dynamic
 }

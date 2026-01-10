@@ -35,7 +35,7 @@ modern build that uses WebAssembly and Web Workers. This build is around:
 
 | Minified | Gzipped | Brotli |
 | -------- | ------- | ------ |
-| 16947 B  | 7423 B  | 6461 B |
+| 16966 B  | 7444 B  | 6463 B |
 
 To use the modern build, include the `MODERN=1` flag when building the library
 with `make`. The WASM implementation is ~5-6x faster than the pure SubtleCrypto
