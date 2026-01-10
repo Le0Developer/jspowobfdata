@@ -13,6 +13,10 @@ enum Implementation {
   SUBTLECRYPTO
   WASM
   WASM_HYBRID
+
+  def isWASM bool {
+    return self == .WASM || self == .WASM_HYBRID
+  }
 }
 
 # Use Web Workers to offload decryption work from the main thread.

@@ -8,4 +8,6 @@
   var WebAssembly dynamic
   var fetch dynamic
   var Worker dynamic
+  var Blob dynamic
+  var URL dynamic
 }

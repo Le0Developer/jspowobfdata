@@ -38,14 +38,33 @@ namespace worker {
 		worker.postMessage(Message.new(id, data, null))
 	}
 
+	var blobbed string = null
 	def source string {
 		# find the source code for the worker (it's our own file)
 		var src = script.src
 		if src is string && src != "" {
 			return src
 		}
+
 		# it has to be in the content itself if it's not in src
-		return "data:text/javascript;," + script.text
+		# => script.text
+
+		# if we use WASM and it's inlined, we can use a data: URI
+		if IMPLEMENTATION.isWASM && decrypt.wasm.DEFAULT_WASM_URL == "" {
+			return "data:," + script.text
+		}
+
+		# we need to use a Blob to create a URL for the worker because a data:
+		# URI would "lose" the origin and the worker would not be able to access
+		# the WASM if it was loaded from a relative path
+
+		# we cache the blob URL so we don't create it multiple times.
+		# While we could immediately revoke it again, this would use more code
+		# and just keeping a few kb in memory is not a problem.
+		if blobbed == null {
+			blobbed = URL.createObjectURL(Blob.new([script.text]))
+		}
+		return blobbed
 	}
 
 	def delegateToWorker bool {
