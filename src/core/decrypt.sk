@@ -18,7 +18,7 @@ namespace decrypt {
 			}
 			const rng = (Math.random * (-1 as dynamic >>> 0)) as int
 			for i in 0 .. data.keyspace {
-				data.key[i >> 3] ^= ((rng >>> i) & 1) << (i & 7)
+				data.arr[1 + (i >> 3)] ^= ((rng >>> i) & 1) << (i & 7)
 			}
 		}
 
